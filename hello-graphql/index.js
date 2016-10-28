@@ -35,3 +35,20 @@ const Query = new GraphQLObjectType({
 const Schema = new GraphQLSchema({
   query: Query
 })
+
+/////////////////////////////////////////////////
+
+// start to query, use 'graphql' function
+let query = 
+`
+  {
+    receivedMsg: echo(message: "Hello")
+  }
+`
+graphql(Schema, query)
+  .then(function(result) {
+    console.log(result)
+  })
+  .catch(function(err) {
+    console.log(err)
+  })

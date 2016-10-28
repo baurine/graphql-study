@@ -38,6 +38,9 @@ const Schema = new GraphQLSchema({
 
 /////////////////////////////////////////////////
 
+// run command in console: 
+// $ babel-node index.js --presets "es2015"
+
 // start to query, use 'graphql' function
 let query = 
 `
@@ -46,6 +49,23 @@ let query =
   }
 `
 graphql(Schema, query)
+  .then(function(result) {
+    console.log(result)
+  })
+  .catch(function(err) {
+    console.log(err)
+  })
+
+// query with variables
+query = 
+`
+  query getEcho($inputMsg: String) {
+    receivedMsg: echo(message: $inputMsg)
+  }
+`
+
+// graphql(Schema, query, null)
+graphql(Schema, query, null, null, {inputMsg: "hello"})
   .then(function(result) {
     console.log(result)
   })

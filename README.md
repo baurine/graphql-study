@@ -1,3 +1,7 @@
-learn GraphQL
+# Learn GraphQL
 
-1. [hello-graphql](https://learngraphql.com/basics/executing-graphql-queries)
+Learn graphql follow tutorail in [learngraphql.com](https://learngraphql.com).
+
+## Note
+
+1. [LearnGraphQL Note](./learn-graphql-note.md)

@@ -9,6 +9,8 @@ Note for learning graphql in <https://learngraphql.com>.
 
 ## Note
 
+注意 GraphQL 分客户端和服务端两端，这里前半部分 (3 - 6 节) 讲的是如何在客户端使用，包括查询和修改。后半部分 (7 - 最后) 讲的是在服务端如何实现，包括定义 schema 和查询，修改的实现。
+
 ### 3. Querying GraphQL
 
 #### 1. normal query
@@ -230,7 +232,8 @@ here 10 is hardcode.
       }
     }
 
-(我叉，这不就是相当于在写函数吗！！！类似 gradle 中的写法，swift 中的写法，最后一个参数是 closure 的话就可以写成这样！)  
+(我叉，这不就是相当于在写函数吗! 类似 gradle 中的写法，swift 中的写法，最后一个参数是 closure 的话就可以写成这样!)
+
 (DSL ??)
 
 #### 4. use query variables anywhere
@@ -266,7 +269,11 @@ Sample, here `Category` is Enums:
 
 ### 7. Defining Queries
 
-如何定义 schema
+这小节讲的是服务端的部分。服务端如何定义 schema。
+
+schema 包括顶层的 query 和 mutation 两部分。每个 query 都是一个 GraphQLObjectType 对象，逐层嵌套。GraphQLObjectType 中包括 name、description、fields 字段。最重要的是 fields 字段，fields 是定义一个处理查询逻辑的函数，返回对象即是包括了我们所想查询的各个字段。每个字段又包括了这个字段的类型，参数 args，以及查询逻辑 resolve 函数。
+
+[完整的示例代码](../hello-graphql/index.js)
 
 #### 1. inspecting the schema
 
@@ -347,6 +354,8 @@ Sample, here `Category` is Enums:
 #### 5. finally 
 
 ?? 没有讲怎么定义参数啊...只是第一小节的例子有所提及。
+
+后来看了后面的[示例代码](../hello-graphql/index.js)，原来在 query 中也是可以定义 args 属性的，就和 mutation 的定义几首一样了。
 
 ### 8. Defining Mutations
 

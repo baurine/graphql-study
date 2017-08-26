@@ -42,6 +42,7 @@ class CreateLink extends Component {
     })
     console.log(linkRes)
     this.setState({description: '', url: ''})
+    this.props.history.push('/')
   }
 }
 

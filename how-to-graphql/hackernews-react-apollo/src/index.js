@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import App from './components/App'
 import registerServiceWorker from './registerServiceWorker'
 import './styles/index.css'
+import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider, createNetworkInterface, ApolloClient } from 'react-apollo'
 
 const networkInterface = createNetworkInterface({
@@ -14,9 +15,11 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>, document.getElementById('root')
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App/>
+    </ApolloProvider>
+  </BrowserRouter>, document.getElementById('root')
 )
 
 registerServiceWorker()

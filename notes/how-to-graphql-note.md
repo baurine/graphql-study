@@ -265,6 +265,49 @@ Link component 显示一条链接，LinkList 显示一个链接数组，显示�
 
     export default graphql(ALL_LINKS_QUERY, { name: 'allLinksQuery' }) (LinkList)
 
+#### Mutations: Creating Links
+
+**Preparing the React components**
+
+实现一个 CreateLink 的 component，用来提交链接。
+
+**Writing the Mutation**
+
+和 query 一样，用一个高阶组件包装上面实现的纯显示的 CreateLink 组件：
+
+    // 1
+    const CREATE_LINK_MUTATION = gql`
+      # 2
+      mutation CreateLinkMutation($description: String!, $url: String!) {
+        createLink(
+          description: $description,
+          url: $url,
+        ) {
+          id
+          createdAt
+          url
+          description
+        }
+      }
+    `
+
+    // 3
+    export default graphql(CREATE_LINK_MUTATION, { name: 'createLinkMutation' })(CreateLink)
+
+发送 mutation 请求：
+
+    _createLink = async () => {
+      const { description, url } = this.state
+      await this.props.createLinkMutation({
+        variables: {
+          description,
+          url
+        }
+      })
+    }
+
+好奇，如果一个组件既有 query，又有 mutation，该怎么包装呢?
+
 ---
 
 ## Backend

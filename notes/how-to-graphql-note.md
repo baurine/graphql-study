@@ -308,6 +308,37 @@ Link component 显示一条链接，LinkList 显示一个链接数组，显示�
 
 好奇，如果一个组件既有 query，又有 mutation，该怎么包装呢?
 
+#### Routing
+
+用 react-router 实现路由。主要是 react-router 的用法，细节略。
+
+react-router 的主要用法。
+
+`<Link>` 渲染一个链接：
+
+    <Link to='/create' className='ml1 no-underline black'>submit</Link>
+
+`<Route>` 指定一个链接和组件的对应关系，所有 `<Route>` 包裹在 `<Switch>` 中：
+
+    <Switch>
+      <Route exact path='/' component={LinkList}/>
+      <Route exact path='/create' component={CreateLink}/>
+    </Switch>
+
+`<BrowserRouter>` 包裹整个 `<App>`，这样，每个组件都能从 props 得到 histroy 对象了：
+
+    ReactDOM.render(
+      <BrowserRouter>
+        <ApolloProvider client={client}>
+          <App/>
+        </ApolloProvider>
+      </BrowserRouter>, document.getElementById('root')
+    )
+
+主动触发链接跳转：
+
+    this.props.histroy.push('/')
+
 ---
 
 ## Backend

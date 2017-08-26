@@ -151,7 +151,85 @@ GraphQL 只是一种标准，并不是一个实现的库。
 
 ### React + Applo
 
+实践，写一个 HackerNews 的 demo，前端用 react + applo，后端用 Graphcool。
+
 #### Introduction
+
+解释了一下各种工具和库的选择，主要是对比了两个 GraphQL client 库，Relay 和 Applo，前者过于复杂了，学习曲线太高，后者简单一些。
+
+#### Getting Started
+
+先大致了解一下 Graphcool 是干嘛的，大致就是一个帮我们托管后端数据的服务，并提供 GraphQL 形式的 API 来访问这些数据。免去我们自己建 GraphQL Server。
+
+**Creating the GraphQL Server**
+
+首先要在 Graphcool 的官网上注册账号 (直接用 Github 账号登录就行)，然后安装 graphcool 的 cli，实际后来我发现 cli 并不是必须的，因为你也可以直接在 Graphcool 的网页 console 上操作，但命令行确实也能带来一些便利，更重要的是可以把数据类型的声明带入代码版本控制中。graphcool cli 的很多操作和 git 相似，比如 `graphcool init/push/pull/status`。
+
+    $ npm install -g graphcool
+    $ graphcool init --schema https://graphqlbin.com/hn-starter.graphql --name Hackernews
+
+第一条命令是安装 graphcool cli，第二条命令是初始化一个 graphcool project，执行 `graphcool init` 时会自动打开浏览器，和你的 graphcool 账户关联上。`--schema` 指定此项目的初始 schema，`--name` 指定项目的名字，命令执行之后，你可以在 graphcool 的 console 页面看到有了一个新的 project Hackernews，并且在本地当前目录下生成了 `project.graphcool` 文件，可以用编辑器打开，它定义了数据类型。`graphcool push` 把 `project.graphcool` 推送到服务器，然后 graphcool 会根据定义的数据类型，自动生成相应的 query 和 mutation。比如在此例中定义了 `type Link {}`，然后就为它生成了相应的 `allLinks` `Link` query 和 `createLink` `updateOrCreateLink` `deleteLink` mutations (你可以在 graphcool console 的 playground 页面中看到生成的这些 schema)。
+
+<https://graphqlbin.com/hn-starter.graphql> 的内容：
+
+    type Link implements Node {
+      description: String!
+      url: String!
+    }
+
+生成的 project.graphcool 的内容：
+
+    # project: cj6t4ldq40qde018487586tqg
+    # version: 2
+
+    type Link implements Node {
+      url: String!
+      description: String!
+      createdAt: DateTime!
+      id: ID! @isUnique
+      updatedAt: DateTime!
+    }
+    ...
+
+graphcool cli 的其它一些命令：
+
+    $ graphcool console  # 在浏览器中打开 console 页面
+    $ graphcool playground  # 在浏览器中打开 playgound 页面
+    $ graphcool endpoints  # 获得 api url
+
+其它一些不是很重要的步骤略。
+
+**Creating the App**
+
+用 create-react-app 初始化项目
+
+    $ npm install -g create-react-app
+    $ create-react-app hackernews-react-apollo
+
+引入 react-apollo 库
+
+    $ yarn add react-apollo
+
+修改 index.js，uri 的值通过 `graphcool endpoints` 命令得到
+
+    import { ApolloProvider, createNetworkInterface, ApolloClient } from 'react-apollo'
+
+    const networkInterface = createNetworkInterface({
+      // uri 的值是通过 `graphcool endpoints` 命令得到的 Simple API url
+      uri: 'https://api.graph.cool/simple/v1/cj6t4ldq40qde018487586tqg'
+    })
+
+    const client = new ApolloClient({
+      networkInterface
+    })
+
+    ReactDOM.render(
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider> , document.getElementById('root')
+    )
+
+#### Queries: Loading Links
 
 ---
 

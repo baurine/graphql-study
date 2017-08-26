@@ -231,6 +231,40 @@ graphcool cli 的其它一些命令：
 
 #### Queries: Loading Links
 
+**Preparing the React components**
+
+Link component 显示一条链接，LinkList 显示一个链接数组，显示的数据先暂时 mock，我们接下来要做的就是用 apollo 来从服务器获取真实数据。
+
+**Query with Apollo Client**
+
+两种方式，一种是直接在 component 中用 `client.query()` 方法进行 GraphQL API 请求：
+
+    client.query({
+      query: gql`
+        query AllLinks {
+          allLinks {
+            id
+          }
+        }
+      `
+    })
+    .then(response => console.log(response.data.allLinks))
+
+另一种方式是像 Redux 那样，使用高阶组件，将 GraphQL 的请求封装在高阶组件中，获得的值通过 props 传给包装的纯显示组件。
+
+    const ALL_LINKS_QUERY = gql`
+      query AllLinksQuery {
+        allLinks {
+          id
+          createdAt
+          url
+          description
+        }
+      }
+    `
+
+    export default graphql(ALL_LINKS_QUERY, { name: 'allLinksQuery' }) (LinkList)
+
 ---
 
 ## Backend

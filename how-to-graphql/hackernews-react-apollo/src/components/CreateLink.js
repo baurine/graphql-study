@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { graphql, gql } from 'react-apollo'
-import { GC_USER_ID } from '../constants'
 import { ALL_LINKS_QUERY } from './LinkList'
+import { GC_USER_ID, LINKS_PER_PAGE } from '../constants'
 
 class CreateLink extends Component {
   state = {
@@ -48,19 +48,26 @@ class CreateLink extends Component {
         postedById
       },
       update: (store, { data: { createLink } }) => {
-        const data = store.readQuery({ query: ALL_LINKS_QUERY })
-        data.allLinks.splice(0, 0, createLink)
+        const first = LINKS_PER_PAGE
+        const skip = 0
+        const orderBy = 'createdAt_DESC'
+        const data = store.readQuery({
+          query: ALL_LINKS_QUERY,
+          variables: { first, skip, orderBy }
+        })
+        data.allLinks.splice(0,0,createLink)
+        data.allLinks.pop()
         store.writeQuery({
           query: ALL_LINKS_QUERY,
-          data
+          data,
+          variables: { first, skip, orderBy }
         })
       }
     })
-    this.props.history.push(`/`)
+    this.props.history.push(`/new/1`)
   }
 }
 
-// 1
 const CREATE_LINK_MUTATION = gql`
   mutation CreateLinkMutation($description: String!, $url: String!, $postedById: ID!) {
     createLink(
@@ -80,5 +87,4 @@ const CREATE_LINK_MUTATION = gql`
   }
 `
 
-// 3
 export default graphql(CREATE_LINK_MUTATION, { name: 'createLinkMutation' })(CreateLink)

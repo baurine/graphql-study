@@ -1,6 +1,6 @@
 # LearnGraphQL Note
 
-Note for learning graphql in <https://learngraphql.com>.
+Note for learning GraphQL in <https://learngraphql.com>.
 
 ## Reference
 

@@ -1,5 +1,9 @@
 # Summary
 
 * [Introduction](README.md)
-* [LearnGraphQL Note](./notes/learn-graphql-note.md)
+* [LearnGraphQL](./notes/learn-graphql-note.md)
+* [HowToGraphQL](./notes/how-to-graphql.md)
+    * [Basic](./notes/how-to-graphql-basic.md)
+    * [Action - Frontend](./notes/how-to-graphql-frontend.md)
+    * [Action - Backend](./notes/how-to-graphql-backend.md)
 

@@ -1,0 +1,42 @@
+# project: cj6t4ldq40qde018487586tqg
+# version: 5
+
+type Link implements Node {
+  url: String!
+  description: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  updatedAt: DateTime!
+  postedBy: User @relation(name: "UsersLinks")
+  votes: [Vote!]! @relation(name: "VotesOnLink")
+}
+
+type File implements Node {
+  contentType: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  name: String!
+  secret: String! @isUnique
+  size: Int!
+  updatedAt: DateTime!
+  url: String! @isUnique
+}
+
+type User implements Node {
+  createdAt: DateTime!
+  id: ID! @isUnique
+  updatedAt: DateTime!
+  email: String @isUnique
+  password: String
+  name: String!
+  links: [Link!]! @relation(name: "UsersLinks")
+  votes: [Vote!]! @relation(name: "UsersVotes")
+}
+
+type Vote implements Node {
+  user: User! @relation(name: "UsersVotes")
+  link: Link! @relation(name: "VotesOnLink")
+  createdAt: DateTime!
+  id: ID! @isUnique
+  updatedAt: DateTime!
+}

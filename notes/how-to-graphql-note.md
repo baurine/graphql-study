@@ -571,6 +571,18 @@ react-router 的主要用法。
       })
     }
 
+#### Pagination
+
+分页，使用 allLinks query 中的 first, skip, orderBy 参数。
+
+    export const ALL_LINKS_QUERY = gql`
+      query AllLinksQuery($first: Int, $skip: Int, $orderBy: LinkOrderBy) {
+        allLinks(first: $first, skip: $skip, orderBy: $orderBy) {
+          id
+          ...
+
+这一小节没有很仔细地看，大致了解，有空再仔细看。
+
 ---
 
 ## Backend

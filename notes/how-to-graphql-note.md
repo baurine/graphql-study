@@ -339,6 +339,103 @@ react-router 的主要用法。
 
     this.props.histroy.push('/')
 
+#### Authentication
+
+实现登录和注册。主要逻辑是：
+
+1. 在 graphcool console 页面 enable 通过 email / password 登录，这样，graphcool 就会给 User 的数据类型加上 email 和 password 属性。并且增加 2 个新的 schema，`createUser()` 用来注册，`signinUser()` 用来登录。
+1. 实现 Login component。
+1. 实现登录注册的 mutation。这里有一个很有用的用法，我们希望注册成功后能够自动登录，因此把 `createUser()` 和 `signinUser()` 写在同一个 mutation 中，就可以用一个请求实现注册和登录，nice!
+
+        const CREATE_USER_MUTATION = gql`
+          mutation CreateUserMutation($name: String!, $email: String!, $password: String!) {
+            createUser(
+              name: $name,
+              authProvider: {
+                email: {
+                  email: $email,
+                  password: $password
+                }
+              }
+            ) {
+              id
+            }
+
+            signinUser(email: {
+              email: $email,
+              password: $password
+            }) {
+              token
+              user {
+                id
+              }
+            }
+          }
+        `
+
+        const SIGNIN_USER_MUTATION = gql`
+          mutation SigninUserMutation($email: String!, $password: String!) {
+            signinUser(email: {
+              email: $email,
+              password: $password
+            }) {
+              token
+              user {
+                id
+              }
+            }
+          }
+        `
+
+        export default compose(
+          graphql(CREATE_USER_MUTATION, { name: 'createUserMutation' }),
+          graphql(SIGNIN_USER_MUTATION, { name: 'signinUserMutation' })
+        )(Login)
+
+1. 在点击登录或注册按钮后，发送登录或注册的请求，并把返回的 user id 和 token 保存到 localStorage 中。
+
+        _confirm = async () => {
+          const { name, email, password } = this.state
+          if (this.state.login) {
+            const result = await this.props.signinUserMutation({
+              variables: {
+                email,
+                password
+              }
+            })
+            const id = result.data.signinUser.user.id
+            const token = result.data.signinUser.token
+            this._saveUserData(id, token)
+          } else {
+            const result = await this.props.createUserMutation({
+              variables: {
+                name,
+                email,
+                password
+              }
+            })
+            const id = result.data.signinUser.user.id
+            const token = result.data.signinUser.token
+            this._saveUserData(id, token)
+          }
+          this.props.history.push(`/`)
+        }
+
+1. 更新 createLink mutation，增加 postedById 参数，用来记录发布链接的用户。(但是这种机制好吗? 不应该是在每个请求中带上 token，然后由服务端根据 token 来查找到相应的用户吗?)
+
+1. 更新 ApolloClient 的配置，为每个请求的 header 增加 authorization 字段。(这才是正确的姿势嘛，但好像服务器目前并没有处理 header 的逻辑，另外，applyMiddelware 是从哪里来的，也没有见到有 import 的地方?)
+
+        networkInterface.use([{
+          applyMiddleware(req, next) {
+            if (!req.options.headers) {
+              req.options.headers = {}
+            }
+            const token = localStorage.getItem(GC_AUTH_TOKEN)
+            req.options.headers.authorization = token ? `Bearer ${token}` : null
+            next()
+          }
+        }])
+
 ---
 
 ## Backend

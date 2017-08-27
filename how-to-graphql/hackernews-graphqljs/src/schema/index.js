@@ -3,13 +3,6 @@ const resolvers = require('./resolvers');
 
 // Define your types here.
 const typeDefs = `
-  type Link {
-    id: ID!
-    url: String!
-    description: String!
-    postedBy: User
-  }
-
   type Query {
     allLinks: [Link]!
   }
@@ -29,10 +22,19 @@ const typeDefs = `
     createVote(linkId: ID!): Vote
   }
 
+  type Link {
+    id: ID!
+    url: String!
+    description: String!
+    postedBy: User
+    votes: [Vote!]!
+  }
+
   type User {
     id: ID!
     name: String!
     email: String
+    votes: [Vote!]!
   }
 
   input AuthProviderSignupData {

@@ -475,6 +475,48 @@ react-router 的主要用法。
 
 跟 redux 的原理是不是几乎一样!
 
+#### Filtering: Searching the List of Links
+
+本小节实现了支持搜索的 Search component。有两个新的知识点：
+
+1. apollo 是如何支持搜索的
+1. 另一种让纯显示 component 使用 apollo api 的方法
+
+先来看 apollo 是如何支持搜索的，很简单，在 allLinks query 中使用 filter 参数：
+
+    const ALL_LINKS_SEARCH_QUERY = gql`
+      query AllLinksSearchQuery($searchText: String!) {
+        allLinks(filter: {
+          OR: [{
+            url_contains: $searchText
+          }, {
+            description_contains: $searchText
+          }]
+        }) {
+          id
+          ...
+        }
+      }
+    `
+
+实际你到 graphcool 的 playground 上看的话，allLinks query 是支持很多可选参数的，除了 fitler，还有用来支持排序的 orderBy 等。
+
+    allLinks(filter: LinkFilter, orderBy: LinkOrderBy, skip: Int, after: String, before: String, first: Int, last: Int): [Link!]!
+
+前面说到，为了让纯显示的 component 能够使用 apollo 的 api，我们要用一个 apollo 的高阶组件包裹它。这一小节讲了另一种方法，不再用高阶组件包裹，而是用 `withApollo()` 方法包裹，实际内部是把 apollo client 实例通过 props 传给了这个 component，然后这个 component 内部就可以随时通过 `this.props.client.xxx` 来调用 apollo 的各种方法了，比如此例中发送搜索请求的示例：
+
+    _executeSearch = async () => {
+      const { searchText } = this.state
+      const result = await this.props.client.query({
+        query: ALL_LINKS_SEARCH_QUERY,
+        variables: { searchText }
+      })
+      const links = result.data.allLinks
+      this.setState({ links })
+    }
+
+另外，此教程中大量使用了 async / await，用起来确实很爽很方便啊。
+
 ---
 
 ## Backend

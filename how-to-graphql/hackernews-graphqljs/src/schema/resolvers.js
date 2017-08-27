@@ -6,9 +6,10 @@ module.exports = {
   },
 
   Mutation: {
-    createLink: async (root, data, {mongo: {Links}}) => {
-      const response = await Links.insert(data); // 3
-      return Object.assign({id: response.insertedIds[0]}, data); // 4
+    createLink: async (root, data, {mongo: {Links}, user}) => {
+      const newLink = Object.assign({postedById: user && user._id}, data)
+      const response = await Links.insert(newLink); // 3
+      return Object.assign({id: response.insertedIds[0]}, newLink); // 4
     },
     // Add this block right after the `createLink` mutation resolver.
     createUser: async (root, data, {mongo: {Users}}) => {
@@ -33,6 +34,10 @@ module.exports = {
 
   Link: {
     id: root => root._id || root.id, // 5
+
+    postedBy: async ({postedById}, data, {mongo: {Users}}) => {
+      return await Users.findOne({_id: postedById});
+    },
   },
 
   User: {

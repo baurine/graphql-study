@@ -19,8 +19,10 @@ const start = async () => {
   };
   const app = express();
   app.use('/graphql', bodyParser.json(), graphqlExpress(buildOptions));
+  // you need create a user by email foo@bar.com to test
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
+    passHeader: `'Authorization': 'bearer token-foo@bar.com'`,
   }));
 
   const PORT = 3000;

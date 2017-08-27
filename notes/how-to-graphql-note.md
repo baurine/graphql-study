@@ -517,6 +517,60 @@ react-router 的主要用法。
 
 另外，此教程中大量使用了 async / await，用起来确实很爽很方便啊。
 
+#### Realtime Updates with GraphQL Subscriptions
+
+使用 apollo 的订阅功能来实现实时获取服务器数据的变化和更新 UI。太赞了!
+
+这个功能正如之前所料，所有 WebSocket 来实现，因此要引入 subscriptions-transport-ws lib，并修改 apollo client 的设置。
+
+实现订阅的示例代码如下所示，很好理解，暂时不做深入研究：
+
+    _subscribeToNewVotes = () => {
+      this.props.allLinksQuery.subscribeToMore({
+        document: gql`
+          subscription {
+            Vote(filter: {
+              mutation_in: [CREATED]
+            }) {
+              node {
+                id
+                link {
+                  id
+                  url
+                  description
+                  createdAt
+                  postedBy {
+                    id
+                    name
+                  }
+                  votes {
+                    id
+                    user {
+                      id
+                    }
+                  }
+                }
+                user {
+                  id
+                }
+              }
+            }
+          }
+        `,
+        updateQuery: (previous, { subscriptionData }) => {
+          const votedLinkIndex = previous.allLinks.findIndex(link => link.id === subscriptionData.data.Vote.node.link.id)
+          const link = subscriptionData.data.Vote.node.link
+          const newAllLinks = previous.allLinks.slice()
+          newAllLinks[votedLinkIndex] = link
+          const result = {
+            ...previous,
+            allLinks: newAllLinks
+          }
+          return result
+        }
+      })
+    }
+
 ---
 
 ## Backend

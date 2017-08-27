@@ -25,6 +25,8 @@ const typeDefs = `
     createUser(name: String!, authProvider: AuthProviderSignupData!): User
 
     signinUser(email: AUTH_PROVIDER_EMAIL): SigninPayload!
+
+    createVote(linkId: ID!): Vote
   }
 
   type User {
@@ -45,6 +47,12 @@ const typeDefs = `
   type SigninPayload {
     token: String
     user: User
+  }
+
+  type Vote {
+    id: ID!
+    user: User!
+    link: Link!
   }
 `;
 

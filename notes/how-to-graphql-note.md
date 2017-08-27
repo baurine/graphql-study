@@ -436,6 +436,45 @@ react-router 的主要用法。
           }
         }])
 
+#### More Mutations and Updating the Store
+
+第一部分 More Mutations，是指实现投票功能，步骤和上一小节差不多：
+
+1. 更新 Link component，显示投票的按钮，以及投票人，投票数量等更多信息。
+1. 更新 schema，增加 Vote 数据类型，把它和 User、Link 关联，并给 User 增加 votes 属性，给 Link 增加 votes 属性，votes 属性都是 Vote 数组。
+1. 更新 allLinks query，在返回的属性中增加 votes 字段。
+1. 在 Link component 中点击投票按钮后调用 createVote mutation。
+
+第二部分内容才是让人有点兴奋的，更新 apollo 的缓存，不过实际看下来，其实内部就是一个跟 redux 差不多的东西。
+
+前面我们已经实现了很多网络请求，但请求返回后我们却并没有更新 UI，导致需要重新手动刷新后才能看到结果。一般项目中我们会用 redux 来管理数据，当请求返回后，我们把结果写到 redux 的 store 中 (实际是由 reducer 来完成的)，然后数据的变化会重新刷新 UI，这样我们就能及时看到结果了。Apollo 也是这么做的! 我觉得它其实是封装了 redux 的逻辑。
+
+此小节中举了两个例子，投票和发布链接，我们这里只看看后者的示例代码：
+
+    await this.props.createLinkMutation({
+      variables: {
+        description,
+        url,
+        postedById
+      },
+      update: (store, { data: { createLink } }) => {
+        const data = store.readQuery({ query: ALL_LINKS_QUERY })
+        data.allLinks.splice(0,0,createLink)
+        store.writeQuery({
+          query: ALL_LINKS_QUERY,
+          data
+        })
+      }
+    })
+
+网络请求返回之后，Apollo 会执行我们定义的 update 函数。在这个函数里分三步走：
+
+1. 通过 `store.readQuery()` 读出 store 中原来的数据。
+1. 将新得到的数据加到原来的数据里。
+1. 通过 `store.writeQuery()` 将新数据更新到 store 中，store 内部会自动重新刷新 UI，这样我们就能及时看到结果了。
+
+跟 redux 的原理是不是几乎一样!
+
 ---
 
 ## Backend

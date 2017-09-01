@@ -6,6 +6,7 @@ const { authenticate } = require('./authentication');
 // 1
 const connectMongo = require('./mongo-connector');
 const buildDataloaders = require('./dataloaders');
+const formatError = require('./formatError');
 
 // 2
 const start = async () => {
@@ -19,6 +20,7 @@ const start = async () => {
         mongo,
         user
       }, // This context object is passed to all resolvers.
+      formatError,
       schema,
     };
   };

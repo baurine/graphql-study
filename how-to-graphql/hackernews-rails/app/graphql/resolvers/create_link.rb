@@ -6,10 +6,11 @@ class Resolvers::CreateLink < GraphQL::Function
   # return type from the mutation
   type Types::LinkType
 
-  def call(_obj, args, _cxt)
+  def call(_obj, args, _ctx)
     Link.create!(
       url: args[:url],
-      description: args[:description]
+      description: args[:description],
+      user: _ctx[:current_user]
     )
   end
 end

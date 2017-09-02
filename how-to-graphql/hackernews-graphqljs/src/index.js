@@ -8,6 +8,10 @@ const connectMongo = require('./mongo-connector');
 const buildDataloaders = require('./dataloaders');
 const formatError = require('./formatError');
 
+const {execute, subscribe} = require('graphql');
+const {createServer} = require('http');
+const {SubscriptionServer} = require('subscriptions-transport-ws');
+
 // 2
 const start = async () => {
   // 3
@@ -24,16 +28,23 @@ const start = async () => {
       schema,
     };
   };
+
+  const PORT = 3000;
   const app = express();
   app.use('/graphql', bodyParser.json(), graphqlExpress(buildOptions));
   // you need create a user by email foo@bar.com to test
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
     passHeader: `'Authorization': 'bearer token-foo@bar.com'`,
+    subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`,
   }));
 
-  const PORT = 3000;
-  app.listen(PORT, () => {
+  const server = createServer(app);
+  server.listen(PORT, () => {
+    SubscriptionServer.create(
+      {execute, subscribe, schema},
+      {server, path: '/subscriptions'},
+    );
     console.log(`Hackernews GraphQL server running on port ${PORT}.`)
   });
 };

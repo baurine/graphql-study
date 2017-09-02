@@ -1,5 +1,6 @@
 const { ObjectID } = require('mongodb')
 const { URL } = require('url')
+const pubsub = require('../pubsub')
 
 class ValidationError extends Error {
   constructor(message, field) {
@@ -8,7 +9,7 @@ class ValidationError extends Error {
   }
 }
 
-function assertValidLink ({url}) {
+function assertValidLink({url}) {
   try {
     new URL(url);
   } catch (error) {
@@ -25,10 +26,14 @@ module.exports = {
 
   Mutation: {
     createLink: async (root, data, {mongo: {Links}, user}) => {
-      assertValidLink(data)
-      const newLink = Object.assign({postedById: user && user._id}, data)
-      const response = await Links.insert(newLink); // 3
-      return Object.assign({id: response.insertedIds[0]}, newLink); // 4
+      assertValidLink(data);
+      const newLink = Object.assign({postedById: user && user._id}, data);
+      const response = await Links.insert(newLink);
+  
+      newLink.id = response.insertedIds[0];
+      pubsub.publish('Link', {Link: {mutation: 'CREATED', node: newLink}});
+  
+      return newLink;
     },
     // Add this block right after the `createLink` mutation resolver.
     createUser: async (root, data, {mongo: {Users}}) => {
@@ -58,6 +63,12 @@ module.exports = {
       const response = await Votes.insert(newVote);
       return Object.assign({id: response.insertedIds[0]}, newVote)
     }
+  },
+
+  Subscription: {
+    Link: {
+      subscribe: () => pubsub.asyncIterator('Link'),
+    },
   },
 
   Link: {

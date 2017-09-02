@@ -4,9 +4,9 @@ const resolvers = require('./resolvers');
 // Define your types here.
 const typeDefs = `
   type Query {
-    allLinks(filter: LinkFilter): [Link!]!
+    allLinks(filter: LinkFilter, skip: Int, first: Int): [Link!]!
   }
-  
+
   input LinkFilter {
     OR: [LinkFilter!]
     description_contains: String

@@ -2,6 +2,8 @@
 
 ### Fundamentals
 
+Ref: <https://www.howtographql.com/basics/0-introduction/>
+
 #### Introduction
 
 略。
@@ -58,6 +60,33 @@
           author: Person!
         }
 
+除了 type 外的其它关键字，用 `input` 定义参数类型，用 `enum` 定义枚举型，另外，用 type 定义的数据类型中，有三种其实并不是数据类型，即 `Query`、`Mutation`、`Subscription`，这三种是最顶层的 schema。
+
+    type Subscription {
+      Link(filter: LinkSubscriptionFilter): LinkSubscriptionPayload
+    }
+    input LinkSubscriptionFilter {
+      mutation_in: [_ModelMutationType!]
+    }
+    type LinkSubscriptionPayload {
+      mutation: _ModelMutationType!
+      node: Link
+    }
+    enum _ModelMutationType {
+      CREATED
+      UPDATED
+      DELETED
+    }
+
+    type Query {
+      allLinks(filter: LinkFilter, skip: Int, first: Int): [Link!]!
+    }
+    input LinkFilter {
+      OR: [LinkFilter!]
+      description_contains: String
+      url_contains: String
+    }
+
 #### Big Picture (Architecture)
 
 GraphQL 只是一种标准，并不是一个实现的库。
@@ -86,6 +115,8 @@ GraphQL 只是一种标准，并不是一个实现的库。
 客户端库的设计：略。
 
 ### Advanced
+
+Ref: <https://www.howtographql.com/advanced/0-clients/>
 
 #### Clients
 

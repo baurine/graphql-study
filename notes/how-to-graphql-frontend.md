@@ -2,6 +2,8 @@
 
 ### React + Applo
 
+Ref: <https://www.howtographql.com/react-apollo/0-introduction/>
+
 实践，写一个 HackerNews 的 demo，前端用 react + applo，后端用 Graphcool。
 
 #### Introduction

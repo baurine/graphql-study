@@ -4,7 +4,13 @@ const resolvers = require('./resolvers');
 // Define your types here.
 const typeDefs = `
   type Query {
-    allLinks: [Link]!
+    allLinks(filter: LinkFilter): [Link!]!
+  }
+  
+  input LinkFilter {
+    OR: [LinkFilter!]
+    description_contains: String
+    url_contains: String
   }
 
   type Mutation {

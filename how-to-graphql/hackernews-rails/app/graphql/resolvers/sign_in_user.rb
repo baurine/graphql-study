@@ -25,6 +25,8 @@ class Resolvers::SignInUser < GraphQL::Function
     crypt = ActiveSupport::MessageEncryptor.new(Rails.application.secrets.secret_key_base.byteslice(0..31))
     token = crypt.encrypt_and_sign("user-id:#{ user.id }")
 
+    _ctx[:session][:token] = token
+
     # what's OpenStruct
     OpenStruct.new({
       user: user,

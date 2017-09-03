@@ -7,6 +7,10 @@ class Resolvers::CreateLink < GraphQL::Function
   type Types::LinkType
 
   def call(obj, args, ctx)
+    if ctx[:current_user].nil?
+      return GraphQL::ExecutionError.new('Please login in first')
+    end
+
     Link.create!(
       description: args[:description],
       url: args[:url],

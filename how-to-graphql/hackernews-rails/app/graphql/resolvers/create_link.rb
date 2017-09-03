@@ -6,11 +6,14 @@ class Resolvers::CreateLink < GraphQL::Function
   # return type from the mutation
   type Types::LinkType
 
-  def call(_obj, args, _ctx)
+  def call(obj, args, ctx)
     Link.create!(
-      url: args[:url],
       description: args[:description],
-      user: _ctx[:current_user]
+      url: args[:url],
+      user: ctx[:current_user]
     )
+  rescue ActiveRecord::RecordInvalid => e
+    # this would catch all validation errors and translate them to GraphQL::ExecutionError
+    GraphQL::ExecutionError.new("Invalid input: #{e.record.errors.full_messages.join(', ')}")
   end
 end
